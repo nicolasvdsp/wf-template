@@ -8,7 +8,7 @@ export const INCLUDE_FEATURES = {
   scrollBehaviour: true,
 
   breakpoints: true,
-  glossary: true``,
+  glossary: true,
   // Add more features as you create them:
   // cursor: false,
   // etc.
