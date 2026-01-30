@@ -4,6 +4,7 @@ import animations from './features/animations/animations';
 import scrollBehaviour from './features/scroll-behaviour/scroll-behaviour';
 
 import breakpoints from './features/breakpoints';
+import glossary from './features/glossary';
 
 // Get features from script tag attributes
 // Usage: <script src="main.js" breakpoints></script>
@@ -63,6 +64,7 @@ function initFeatures() {
   ACTIVE_FEATURES.scrollBehaviour && scrollBehaviour();
 
   ACTIVE_FEATURES.breakpoints && breakpoints();
+  ACTIVE_FEATURES.glossary && glossary();
 }
 
 if (document.readyState === 'loading') {
