@@ -1,5 +1,5 @@
 function lenisSetup() {
-
+  console.log("hey");
   // Initialize Lenis
   const lenis = new Lenis({
     autoRaf: true,
@@ -19,6 +19,8 @@ function lenisSetup() {
       });
     });
   }
+  initScrollToAnchorLenis();
 }
+
 
 export default lenisSetup;
