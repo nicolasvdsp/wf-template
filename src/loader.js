@@ -9,6 +9,8 @@
  */
 
 const DEV_PORT = 3011;
+const DEV_MESSAGE = "🚧 Dev Mode activated";
+const LIVE_MESSAGE = "🛸 Hi there explorer! You have stumbeled upon the mothership. Lookinging for secretes?";
 
 export function detectAndRun(runApp) {
   // Prevent double execution (dev server loads main.js again)
@@ -34,7 +36,7 @@ export function detectAndRun(runApp) {
   fetch(localhostUrl, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' })
     .then(() => {
       clearTimeout(timeoutId);
-      console.log('[Dev] Localhost detected — loading dev server');
+      console.log(DEV_MESSAGE);
 
       // Load Vite client for HMR
       const viteClient = document.createElement('script');
@@ -52,7 +54,7 @@ export function detectAndRun(runApp) {
     })
     .catch(() => {
       clearTimeout(timeoutId);
-      console.log('[Dev] No localhost — running bundled code');
+      console.log(LIVE_MESSAGE);
       runApp();
     });
 }
