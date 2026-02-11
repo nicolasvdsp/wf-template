@@ -7,7 +7,7 @@ const httpsConfig = false
 export default defineConfig({
   server: {
     host: 'localhost',
-    port: 3000,
+    port: 3011,
     cors: true,
     https: httpsConfig, // Set to true or cert object if using HTTPS
     hmr: {
