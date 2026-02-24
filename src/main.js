@@ -1,6 +1,9 @@
 // import './scss/app.scss';
 import { INCLUDE_FEATURES } from './config';
 import { detectAndRun } from './loader';
+
+import pageTransitions from './features/page-transitions/page-transitions';
+import customFeature from './features/custom-feature';
 import animations from './features/animations/animations';
 import scrollBehaviour from './features/scroll-behaviour/scroll-behaviour';
 import breakpoints from './features/breakpoints';
@@ -18,6 +21,8 @@ function runApp() {
   const ACTIVE_FEATURES = getFeaturesFromScriptTag();
 
   function initFeatures() {
+    ACTIVE_FEATURES.pageTransitions && pageTransitions();
+    ACTIVE_FEATURES.customFeature && customFeature();
     ACTIVE_FEATURES.animations && animations();
     ACTIVE_FEATURES.scrollBehaviour && scrollBehaviour();
     ACTIVE_FEATURES.breakpoints && breakpoints();

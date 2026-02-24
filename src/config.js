@@ -4,9 +4,11 @@
  * Only enabled features will be loaded and initialized
  */
 export const INCLUDE_FEATURES = {
-  animations: true,
-  scrollBehaviour: true,
+  animations: false,
+  scrollBehaviour: false,
 
+  pageTransitions: true,
+  customFeature: true,
   breakpoints: true,
   glossary: true,
   // Add more features as you create them:
