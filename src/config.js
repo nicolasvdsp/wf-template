@@ -5,7 +5,7 @@
  */
 export const INCLUDE_FEATURES = {
   animations: false,
-  scrollBehaviour: false,
+  scrollBehaviour: true,
 
   pageTransitions: true,
   customFeature: true,

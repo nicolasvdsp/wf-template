@@ -393,6 +393,7 @@ function initPageTransitions() {
       lerp: 0.165,
       wheelMultiplier: 1.25,
     });
+    window.lenis = lenis;
 
     if (hasScrollTrigger) {
       lenis.on("scroll", ScrollTrigger.update);
