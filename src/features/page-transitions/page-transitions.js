@@ -10,6 +10,10 @@ function initPageTransitions() {
   let nextPage = document;
   let onceFunctionsInitialized = false;
 
+  let flipState = null;
+  let flippedThumbnail = null;
+  let savedBodyColor = null;
+
   const hasLenis = typeof window.Lenis !== "undefined";
   const hasScrollTrigger = typeof window.ScrollTrigger !== "undefined";
 
@@ -142,7 +146,110 @@ function initPageTransitions() {
     });
   }
 
+  function leaveItemToDetailTransition(current, next, trigger) {
+    const clicked = trigger.closest("[data-pagetransition-trigger]");
+    if (!clicked) return runPageLeaveAnimation(current, next);
 
+    // -----------VARIABLES--------------
+    const thumbnail = clicked.querySelector("[data-pagetransition-target]");
+    const nextBody = next.ownerDocument.body;
+
+    flipState = Flip.getState(thumbnail);
+    flippedThumbnail = thumbnail;
+
+    // ------------var_end---------------
+
+    const tl = gsap.timeline({
+      onComplete: () => { current.remove() }
+    });
+
+    if (reducedMotion) {
+      // Immediate swap behavior if user prefers reduced motion
+      return tl.set(current, { autoAlpha: 0 });
+    }
+
+    // -----------TIMELINE---------------
+    tl.to(current, {
+      autoAlpha: 0,
+      duration: .6
+    }, 0);
+
+    // ------------tl_end----------------
+
+    return tl;
+  }
+
+  function enterDetailFromItemTransition(next) {
+    if (!flipState || !flippedThumbnail) return runPageEnterAnimation(next);
+
+    console.log(next);
+
+    // -----------VARIABLES--------------
+    const nextHero = next.querySelector("section"); // or nextBody, nextMain,... depending on what you want to target
+    const nextBody = next.ownerDocument.body;
+    nextBody.style.removeProperty('background-color');
+    const nextBodyColor = getComputedStyle(nextBody).backgroundColor;
+    nextBody.style.backgroundColor = savedBodyColor;
+
+    const revealElements = nextHero.querySelectorAll("[data-transition-reveal]");
+    // ------------var_end---------------
+
+    next.style.backgroundColor = 'transparent';
+
+    const tl = gsap.timeline();
+
+    if (reducedMotion) {
+      // Immediate swap behavior if user prefers reduced motion
+      tl.set(next, { autoAlpha: 1 });
+      tl.add("pageReady")
+      tl.call(resetPage, [next], "pageReady");
+      return new Promise(resolve => tl.call(resolve, null, "pageReady"));
+    }
+
+    const placeholder = next.querySelector("[data-pagetransition-target]");
+    placeholder.parentNode.insertBefore(flippedThumbnail, placeholder);
+    placeholder.remove();
+
+    // -----------TIMELINE---------------
+    //gsap marker: marks the start of the animation
+    tl.add("startEnter", .6);
+
+    tl.add(Flip.from(flipState, {
+    }), "startEnter");
+
+    tl.fromTo(nextBody, {
+      backgroundColor: savedBodyColor,
+    }, {
+      backgroundColor: nextBodyColor,
+    }, "startEnter");
+
+    tl.fromTo(revealElements, {
+      autoAlpha: 0,
+      yPercent: 25
+    }, {
+      autoAlpha: 1,
+      yPercent: 0,
+      stagger: .1
+    }, "startEnter+=0.2");
+
+    //gsap marker: marks the end of the animation
+    tl.add("pageReady");
+    // ------------tl_end----------------
+
+
+    tl.call(resetPage, [next], "pageReady");
+    tl.call(() => {
+      flippedThumbnail = null;
+      flipState = null;
+      savedBodyColor = null;
+      gsap.set(nextBody, { clearProps: "backgroundColor" });
+      next.style.removeProperty('background-color');
+    })
+
+    return new Promise(resolve => {
+      tl.call(resolve, null, "pageReady");
+    });
+  }
   // -----------------------------------------
   // BARBA HOOKS + INIT
   // -----------------------------------------
@@ -195,6 +302,28 @@ function initPageTransitions() {
     timeout: 7000,
     preventRunning: true,
     transitions: [
+      {
+        name: "item to detail page",
+        sync: true,
+        from: { namespace: ["page-b"] },
+        to: { namespace: ["page-c"] },
+        custom: ({ trigger }) => trigger.hasAttribute("data-pagetransition-trigger"),
+
+        beforeLeave(data) {
+          savedBodyColor = getComputedStyle(data.current.container).backgroundColor;
+          document.body.style.backgroundColor = savedBodyColor;
+        },
+
+        // Current page leaves
+        async leave(data) {
+          return leaveItemToDetailTransition(data.current.container, data.next.container, data.trigger);
+        },
+
+        // New page enters
+        async enter(data) {
+          return enterDetailFromItemTransition(data.next.container);
+        }
+      },
       {
         name: "default",
         sync: true,
@@ -304,9 +433,7 @@ function initPageTransitions() {
     var tpl = document.createElement('template');
     tpl.innerHTML = data.next.html.trim();
     var nextNodes = tpl.content.querySelectorAll('[data-barba-update]');
-    console.log(nextNodes);
     var currentNodes = document.querySelectorAll('nav [data-barba-update]');
-    console.log(currentNodes);
 
     currentNodes.forEach(function (curr, index) {
       var next = nextNodes[index];
