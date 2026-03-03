@@ -8,6 +8,7 @@ import animations from './features/animations/animations';
 import scrollBehaviour from './features/scroll-behaviour/scroll-behaviour';
 import breakpoints from './features/breakpoints';
 import glossary from './features/glossary';
+import textScramble from './features/text-scramble';
 
 // ============================================
 // START
@@ -27,6 +28,7 @@ function runApp() {
     ACTIVE_FEATURES.scrollBehaviour && scrollBehaviour();
     ACTIVE_FEATURES.breakpoints && breakpoints();
     ACTIVE_FEATURES.glossary && glossary();
+    ACTIVE_FEATURES.textScramble && textScramble();
   }
 
   if (document.readyState === 'loading') {
