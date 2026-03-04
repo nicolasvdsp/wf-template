@@ -9,6 +9,7 @@ function initPageTransitions() {
   let lenis = null;
   let nextPage = document;
   let onceFunctionsInitialized = false;
+  let isFirstEnter = true;
 
   let flipState = null;
   let flippedThumbnail = null;
@@ -52,8 +53,10 @@ function initPageTransitions() {
   }
   function initAfterEnterFunctions(next) {
     nextPage = next || document;
+    const scope = isFirstEnter ? document : nextPage;
+    isFirstEnter = false;
 
-    document.dispatchEvent(new CustomEvent('barba:afterEnter', { detail: { container: nextPage } }));
+    document.dispatchEvent(new CustomEvent('barba:afterEnter', { detail: { container: scope } }));
 
     // Runs after enter animation completes
     // if (has('[data-something]')) initSomething();
