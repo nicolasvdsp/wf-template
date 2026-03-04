@@ -76,6 +76,96 @@ function initPageTransitions() {
 
 
   // -----------------------------------------
+  // SECTION & ELEMENT REVEALS
+  // -----------------------------------------
+
+  const radialStops = Array.from({ length: 17 }, (_, i) => {
+    const t = i / 16;
+    return { a: (t * t * (3 - 2 * t)).toFixed(3), d: t * 50 };
+  });
+  const textRevealConfig = {
+    lines: { duration: 0.8, stagger: 0.08 },
+    words: { duration: 0.6, stagger: 0.06 },
+    chars: { duration: 0.4, stagger: 0.01 }
+  };
+  const textRevealTypeMap = {
+    'stagger-lines': 'lines',
+    'stagger-words': 'words',
+    'stagger-chars': 'chars'
+  };
+
+  function addSectionReveal(tl, next, position) {
+    const overlay = next.querySelector('[data-reveal-section]');
+    if (!overlay) return;
+
+    const type = overlay.getAttribute('data-reveal-section');
+
+    if (type === "radial") {
+      const siblings = [...overlay.parentElement.children].filter(el => el !== overlay);
+      const setMask = (v) => { overlay.style.maskImage = overlay.style.webkitMaskImage = v; };
+
+      tl.set(overlay, { autoAlpha: 1 }, position);
+      tl.fromTo(siblings, { filter: "blur(12px)" }, { filter: "blur(0px)", duration: 1.2, ease: "power2.out" }, position + "+=0.2");
+      tl.to({ size: 0 }, {
+        size: 150, duration: 1.2, ease: "power2.in",
+        onUpdate() {
+          const s = this.targets()[0].size;
+          setMask(`radial-gradient(ellipse, transparent ${s}%, ${radialStops.map(({ a, d }) => `rgba(0,0,0,${a}) ${(s + d).toFixed(1)}%`).join(",")})`);
+        },
+        onComplete() {
+          gsap.set(overlay, { autoAlpha: 0 });
+          setMask("");
+        }
+      }, position);
+    }
+  }
+
+  function addTextReveals(tl, next, position) {
+    const elements = next.querySelectorAll('[data-reveal-text]');
+    if (!elements.length) return;
+
+    elements.forEach((el, i) => {
+      const type = textRevealTypeMap[el.getAttribute('data-reveal-text')] || 'lines';
+      const typesToSplit =
+        type === 'lines' ? 'lines' :
+          type === 'words' ? 'lines, words' :
+            'lines, words, chars';
+      const config = textRevealConfig[type];
+
+      const split = SplitText.create(el, {
+        type: typesToSplit,
+        mask: 'lines',
+        linesClass: 'line',
+        wordsClass: 'word',
+        charsClass: 'char'
+      });
+
+      gsap.set(split.lines, { paddingBottom: '0.15em' });
+      gsap.set(el, { autoAlpha: 1 });
+      tl.from(split[type], {
+        yPercent: 110,
+        duration: config.duration,
+        stagger: config.stagger,
+        ease: 'expo.out'
+      }, position + "+=" + (i * 0.1));
+    });
+  }
+
+  function addElementReveals(tl, next, position) {
+    const elements = next.querySelectorAll('[data-reveal-element]');
+    if (!elements.length) return;
+
+    gsap.set(elements, { autoAlpha: 0, yPercent: 25 });
+    tl.to(elements, {
+      autoAlpha: 1,
+      yPercent: 0,
+      stagger: 0.15,
+      duration: 0.6,
+      ease: 'expo.out'
+    }, position);
+  }
+
+  // -----------------------------------------
   // PAGE TRANSITIONS
   // -----------------------------------------
 
@@ -174,6 +264,11 @@ function initPageTransitions() {
       }, "hideContent-=0.5");
     }
 
+    addSectionReveal(loadTimeline, next, "hideContent");
+    addTextReveals(loadTimeline, next, "hideContent+=0.3");
+    addElementReveals(loadTimeline, next, "hideContent+=0.3");
+
+
     // ------------tl_end----------------
 
     loadTimeline.call(() => {
@@ -232,6 +327,10 @@ function initPageTransitions() {
     }, {
       autoAlpha: 1,
     }, "startEnter");
+
+    addSectionReveal(tl, next, "startEnter");
+    addTextReveals(tl, next, "startEnter+=0.2");
+    addElementReveals(tl, next, "startEnter+=0.2");
 
     //gsap marker: marks the end of the animation
     tl.add("pageReady");
@@ -322,6 +421,10 @@ function initPageTransitions() {
       ease: "parallax"
     }, "startEnter");
 
+    addSectionReveal(tl, next, "startEnter");
+    addTextReveals(tl, next, "startEnter+=1");
+    addElementReveals(tl, next, "startEnter+=1");
+
     //gsap marker: marks the end of the animation
     tl.add("pageReady");
     // ------------tl_end----------------
@@ -378,7 +481,6 @@ function initPageTransitions() {
     const nextBodyColor = getComputedStyle(nextBody).backgroundColor;
     nextBody.style.backgroundColor = savedBodyColor;
 
-    const revealElements = nextHero.querySelectorAll("[data-transition-reveal]");
     // ------------var_end---------------
 
     next.style.backgroundColor = 'transparent';
@@ -410,14 +512,9 @@ function initPageTransitions() {
       backgroundColor: nextBodyColor,
     }, "startEnter");
 
-    tl.fromTo(revealElements, {
-      autoAlpha: 0,
-      yPercent: 25
-    }, {
-      autoAlpha: 1,
-      yPercent: 0,
-      stagger: .1
-    }, "startEnter+=0.2");
+    addSectionReveal(tl, next, "startEnter");
+    addTextReveals(tl, next, "startEnter+=0.2");
+    addElementReveals(tl, next, "startEnter+=0.2");
 
     //gsap marker: marks the end of the animation
     tl.add("pageReady");
