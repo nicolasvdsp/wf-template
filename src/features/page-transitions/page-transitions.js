@@ -146,6 +146,95 @@ function initPageTransitions() {
     });
   }
 
+  function pageLeaveParallaxOver(current, next) {
+    // -----------VARIABLES--------------
+    const transitionWrap = document.querySelector("[data-transition-wrap]");
+    const transitionDark = transitionWrap.querySelector("[data-transition-dark]");
+    CustomEase.create("parallax", "0.7, 0.05, 0.13, 1");
+    // ------------var_end---------------
+
+    const tl = gsap.timeline({
+      onComplete: () => { current.remove() }
+    });
+
+    if (reducedMotion) {
+      // Immediate swap behavior if user prefers reduced motion
+      return tl.set(current, { autoAlpha: 0 });
+    }
+
+    // -----------TIMELINE---------------
+
+    tl.set(transitionWrap, {
+      zIndex: 2
+    })
+
+    tl.fromTo(transitionDark, {
+      autoAlpha: 0,
+    }, {
+      autoAlpha: .8,
+      duration: 1.2,
+      ease: "parallax"
+    }, 0)
+
+    tl.fromTo(current, {
+      y: "0vh",
+    },
+      {
+        y: "-25vh",
+        duration: 1.2,
+        ease: "parallax"
+      }, 0);
+
+    tl.set(transitionDark, {
+      autoAlpha: 0,
+    })
+    // ------------tl_end----------------
+    return tl;
+  }
+
+  function pageEnterParallaxOver(next) {
+    // -----------VARIABLES--------------
+
+    // ------------var_end---------------
+
+    const tl = gsap.timeline();
+
+    if (reducedMotion) {
+      // Immediate swap behavior if user prefers reduced motion
+      tl.set(next, { autoAlpha: 1 });
+      tl.add("pageReady")
+      tl.call(resetPage, [next], "pageReady");
+      return new Promise(resolve => tl.call(resolve, null, "pageReady"));
+    }
+
+    // -----------TIMELINE---------------
+    //gsap marker: marks the start of the animation
+    tl.add("startEnter", 0);
+
+    tl.set(next, {
+      zIndex: 3,
+    });
+
+    tl.fromTo(next, {
+      y: "100vh",
+    }, {
+      y: "0vh",
+      duration: 1.2,
+      clearProps: "all",
+      ease: "parallax"
+    }, "startEnter");
+
+    //gsap marker: marks the end of the animation
+    tl.add("pageReady");
+    // ------------tl_end----------------
+
+    tl.call(resetPage, [next], "pageReady");
+
+    return new Promise(resolve => {
+      tl.call(resolve, null, "pageReady");
+    });
+  }
+
   function leaveItemToDetailTransition(current, next, trigger) {
     const clicked = trigger.closest("[data-pagetransition-trigger]");
     if (!clicked) return runPageLeaveAnimation(current, next);
@@ -302,7 +391,7 @@ function initPageTransitions() {
     timeout: 7000,
     preventRunning: true,
     transitions: [
-      {
+      { //item to detail page
         name: "item to detail page",
         sync: true,
         from: { namespace: ["page-b"] },
@@ -324,8 +413,31 @@ function initPageTransitions() {
           return enterDetailFromItemTransition(data.next.container);
         }
       },
-      {
-        name: "default",
+      { //parallax over
+        name: "parallax over",
+        custom: () => true,
+        sync: true,
+
+        // First load
+        async once(data) {
+          initOnceFunctions();
+
+          return runPageOnceAnimation(data.next.container);
+        },
+
+        // Current page leaves
+        async leave(data) {
+          return pageLeaveParallaxOver(data.current.container, data.next.container);
+        },
+
+        // New page enters
+        async enter(data) {
+          return pageEnterParallaxOver(data.next.container);
+        }
+      },
+      { //crossfade
+        name: "crossfade",
+        custom: () => false,
         sync: true,
 
         // First load
@@ -345,6 +457,7 @@ function initPageTransitions() {
           return runPageEnterAnimation(data.next.container);
         }
       }
+
     ],
   });
 
