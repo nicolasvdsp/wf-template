@@ -12,6 +12,7 @@ export const INCLUDE_FEATURES = {
   breakpoints: true,
   glossary: true,
   textScramble: true,
+  textStagger: true,
   // Add more features as you create them:
   // cursor: false,
   // etc.
