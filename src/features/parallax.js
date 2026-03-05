@@ -121,10 +121,45 @@ function initGlobalParallax(container) {
   )
 }
 
+function initFooterParallax(container) {
+  container = container || document;
+  const init = container.querySelectorAll('[data-footer-parallax]');
+  if (!init.length) return;
+
+  init.forEach(el => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: 'clamp(top bottom)',
+        end: 'clamp(top top)',
+        scrub: true
+      }
+    });
+
+    const inner = el.querySelector('[data-footer-parallax-inner]');
+    const dark = el.querySelector('[data-footer-parallax-dark]');
+
+    if (inner) {
+      tl.from(inner, {
+        yPercent: -25,
+        ease: 'linear'
+      });
+    }
+
+    if (dark) {
+      tl.from(dark, {
+        opacity: 0.5,
+        ease: 'linear'
+      }, '<');
+    }
+  });
+}
+
 function parallax() {
   document.addEventListener("barba:afterEnter", (e) => {
     initStackingCardsParallax(e.detail.container);
     initGlobalParallax(e.detail.container);
+    initFooterParallax(e.detail.container);
   });
 }
 
