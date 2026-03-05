@@ -1,7 +1,7 @@
 function initVimeoBGVideo(container) {
   container = container || document;
   // Select all elements that have [data-vimeo-bg-init]
-  const vimeoPlayers = document.querySelectorAll('[data-vimeo-bg-init]');
+  const vimeoPlayers = container.querySelectorAll('[data-vimeo-bg-init]');
   if (!vimeoPlayers.length) return;
 
   vimeoPlayers.forEach(function (vimeoElement, index) {
@@ -134,7 +134,7 @@ function initVimeoBGVideo(container) {
 
 // Initialize Vimeo Background Video
 function vimeoBackground() {
-  document.addEventListener('barba:pageVisible', (e) => {
+  document.addEventListener('barba:afterEnter', (e) => {
     initVimeoBGVideo(e.detail.container);
   });
 }
