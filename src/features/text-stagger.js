@@ -24,7 +24,7 @@ function initStaggerOnScroll(container) {
       wordsClass: 'word',
       charsClass: 'letter',
       onSplit(instance) {
-        gsap.set(instance.lines, { paddingBottom: '0.15em' });
+        gsap.set(instance.lines, { paddingBottom: '0.15em', marginBottom: '-0.15em' });
         const animTargets = instance[type];
         const config = splitConfig[type];
 

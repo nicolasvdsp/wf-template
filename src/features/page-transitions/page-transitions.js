@@ -145,7 +145,7 @@ function initPageTransitions() {
         charsClass: 'char'
       });
 
-      gsap.set(split.lines, { paddingBottom: '0.15em' });
+      gsap.set(split.lines, { paddingBottom: '0.15em', marginBottom: '-0.15em' });
       gsap.set(el, { autoAlpha: 1 });
       tl.from(split[type], {
         yPercent: 110,
