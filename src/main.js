@@ -10,6 +10,7 @@ import breakpoints from './features/breakpoints';
 import glossary from './features/glossary';
 import textScramble from './features/text-scramble';
 import textStagger from './features/text-stagger';
+import marquee from './features/marquee';
 
 // ============================================
 // START
@@ -31,6 +32,7 @@ function runApp() {
     ACTIVE_FEATURES.glossary && glossary();
     ACTIVE_FEATURES.textScramble && textScramble();
     ACTIVE_FEATURES.textStagger && textStagger();
+    ACTIVE_FEATURES.marquee && marquee();
   }
 
   if (document.readyState === 'loading') {
