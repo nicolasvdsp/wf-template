@@ -15,6 +15,7 @@ export const INCLUDE_FEATURES = {
   textStagger: true,
   marquee: true,
   vimeoBackground: true,
+  parallax: true,
   // Add more features as you create them:
   // cursor: false,
   // etc.
