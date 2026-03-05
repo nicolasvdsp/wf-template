@@ -1,6 +1,6 @@
-function alianAnimation(container) {
+function alianInteraction(container) {
   container = container || document;
-  const folder = container.querySelector(".icon.icon-folder");
+  const folder = container.querySelector('[data-icon-type="folder"]');
   if (!folder) return;
   const alian = folder.querySelector('[data-icon-type="alian"]');
 
@@ -56,9 +56,31 @@ function alianAnimation(container) {
   });
 }
 
+function dragJoystick(container) {
+  container = container || document;
+  const joystick = container.querySelector('[data-icon-type="stick"]');
+  if (!joystick) return;
+
+
+  const maxRotation = 15; // Max 15 graden naar links/rechts
+  const centerX = window.innerWidth / 2; // Center van het scherm (horizontaal)
+
+  joystick.style.transformOrigin = "50% 55%";
+
+  document.addEventListener("mousemove", (event) => {
+    const mouseX = event.clientX; // Muispositie op de X-as
+    const deltaX = mouseX - centerX;
+    const rotation = Math.max(-maxRotation, Math.min(maxRotation, deltaX / 10)); // deltaX wordt gedeeld om de rotatie geleidelijker te maken
+
+    // Gebruik GSAP om de rotatie van de joystick te veranderen
+    gsap.to(joystick, { rotation: rotation, ease: "linear" });
+  });
+}
+
 function microInteractions() {
   document.addEventListener('barba:pageVisible', (e) => {
-    alianAnimation(e.detail.container);
+    dragJoystick(e.detail.container);
+    alianInteraction(e.detail.container);
   });
 }
 
