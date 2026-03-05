@@ -52,11 +52,16 @@ function initPageTransitions() {
     // Runs before the enter animation
     // if (has('[data-something]')) initSomething();
   }
+  function dispatchPageVisible(container) {
+    document.dispatchEvent(new CustomEvent('barba:pageVisible', { detail: { container } }));
+  }
+
   function initAfterEnterFunctions(next) {
     nextPage = next || document;
     const scope = isFirstEnter ? document : nextPage;
     isFirstEnter = false;
 
+    dispatchPageVisible(scope);
     document.dispatchEvent(new CustomEvent('barba:afterEnter', { detail: { container: scope } }));
 
     // Runs after enter animation completes
@@ -107,7 +112,7 @@ function initPageTransitions() {
       tl.set(overlay, { autoAlpha: 1 }, position);
       tl.fromTo(siblings, { filter: "blur(12px)" }, { filter: "blur(0px)", duration: 1.2, ease: "power2.out" }, position + "+=0.2");
       tl.to({ size: 0 }, {
-        size: 150, duration: 1.2, ease: "power2.in",
+        size: 150, duration: 1.8, ease: "easeOut",
         onUpdate() {
           const s = this.targets()[0].size;
           setMask(`radial-gradient(ellipse, transparent ${s}%, ${radialStops.map(({ a, d }) => `rgba(0,0,0,${a}) ${(s + d).toFixed(1)}%`).join(",")})`);
@@ -155,13 +160,13 @@ function initPageTransitions() {
     const elements = next.querySelectorAll('[data-reveal-element]');
     if (!elements.length) return;
 
-    gsap.set(elements, { autoAlpha: 0, yPercent: 25 });
+    gsap.set(elements, { autoAlpha: 0, yPercent: 12.5 });
     tl.to(elements, {
       autoAlpha: 1,
       yPercent: 0,
       stagger: 0.15,
-      duration: 0.6,
-      ease: 'expo.out'
+      duration: 1.5,
+      ease: 'loader'
     }, position);
   }
 
@@ -192,16 +197,17 @@ function initPageTransitions() {
     const loadTimeline = gsap.timeline({
       defaults: {
         ease: "loader",
-        duration: 4
+        duration: 3.5
       }
     })
       .set(wrap, { display: "block" })
-      .to(progressBars, { scaleX: 1 })
+      // .to(progressBars, { scaleX: 1 })
       .to(logo, { clipPath: "inset(0% 0% 0% 0%)" }, "<")
       .to(container, { autoAlpha: 0, duration: 0.5 })
       .to(progressBars, { scaleX: 0, transformOrigin: "right center", duration: 0.5 }, "<")
       .add("hideContent", "<")
-      .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
+      // .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
+      .to(bg, { autoAlpha: 0, duration: 1 }, "hideContent")
       .set(wrap, { display: "none" });
 
     // If there are items to hide FOUC for, reset them at the start
@@ -231,7 +237,7 @@ function initPageTransitions() {
         gsap.to({ val: 0 }, {
           val: 100,
           duration: 1,
-          snap: { val: 100 / 13 },
+          snap: { val: 100 / 6 },
           ease: "none",
           onUpdate() {
             textElements[0].textContent = "( " + Math.round(this.targets()[0].val) + "% )";
@@ -264,9 +270,10 @@ function initPageTransitions() {
       }, "hideContent-=0.5");
     }
 
-    addSectionReveal(loadTimeline, next, "hideContent");
+    loadTimeline.call(() => dispatchPageVisible(next), null, "hideContent");
+    addSectionReveal(loadTimeline, next, "hideContent-=.05");
     addTextReveals(loadTimeline, next, "hideContent+=0.3");
-    addElementReveals(loadTimeline, next, "hideContent+=0.3");
+    addElementReveals(loadTimeline, next, "hideContent+=0.6");
 
 
     // ------------tl_end----------------
@@ -328,12 +335,14 @@ function initPageTransitions() {
       autoAlpha: 1,
     }, "startEnter");
 
-    addSectionReveal(tl, next, "startEnter");
-    addTextReveals(tl, next, "startEnter+=0.2");
-    addElementReveals(tl, next, "startEnter+=0.2");
+    tl.call(() => dispatchPageVisible(next), null, "startEnter");
 
     //gsap marker: marks the end of the animation
     tl.add("pageReady");
+
+    addSectionReveal(tl, next, "pageReady+=0.05");
+    addTextReveals(tl, next, "pageReady+=0.2");
+    addElementReveals(tl, next, "pageReady+=0.2");
     // ------------tl_end----------------
 
     tl.call(resetPage, [next], "pageReady");
@@ -421,12 +430,14 @@ function initPageTransitions() {
       ease: "parallax"
     }, "startEnter");
 
-    addSectionReveal(tl, next, "startEnter");
-    addTextReveals(tl, next, "startEnter+=1");
-    addElementReveals(tl, next, "startEnter+=1");
+    tl.call(() => dispatchPageVisible(next), null, "startEnter");
 
     //gsap marker: marks the end of the animation
     tl.add("pageReady");
+
+    addSectionReveal(tl, next, "startEnter-=-5");
+    addTextReveals(tl, next, "pageReady-=0");
+    addElementReveals(tl, next, "pageReady-=0");
     // ------------tl_end----------------
 
     tl.call(resetPage, [next], "pageReady");
@@ -512,12 +523,13 @@ function initPageTransitions() {
       backgroundColor: nextBodyColor,
     }, "startEnter");
 
-    addSectionReveal(tl, next, "startEnter");
-    addTextReveals(tl, next, "startEnter+=0.2");
-    addElementReveals(tl, next, "startEnter+=0.2");
 
     //gsap marker: marks the end of the animation
     tl.add("pageReady");
+
+    addSectionReveal(tl, next, "pageReady+=0.05");
+    addTextReveals(tl, next, "pageReady+=0.1.5");
+    addElementReveals(tl, next, "pageReady+=0.2");
     // ------------tl_end----------------
 
 

@@ -134,7 +134,7 @@ function initVimeoBGVideo(container) {
 
 // Initialize Vimeo Background Video
 function vimeoBackground() {
-  document.addEventListener('barba:afterEnter', (e) => {
+  document.addEventListener('barba:pageVisible', (e) => {
     initVimeoBGVideo(e.detail.container);
   });
 }

@@ -32,7 +32,7 @@ function initCSSMarquee(container) {
 }
 
 function marquee() {
-  document.addEventListener('barba:afterEnter', (e) => {
+  document.addEventListener('barba:pageVisible', (e) => {
     initCSSMarquee(e.detail.container);
   });
 }
