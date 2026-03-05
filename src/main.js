@@ -13,6 +13,7 @@ import textStagger from './features/text-stagger';
 import marquee from './features/marquee';
 import vimeoBackground from './features/videos/vimeo-background';
 import parallax from './features/parallax';
+import microInteractions from './features/micro-interactions';
 
 // ============================================
 // START
@@ -37,6 +38,7 @@ function runApp() {
     ACTIVE_FEATURES.marquee && marquee();
     ACTIVE_FEATURES.vimeoBackground && vimeoBackground();
     ACTIVE_FEATURES.parallax && parallax();
+    ACTIVE_FEATURES.microInteractions && microInteractions();
   }
 
   if (document.readyState === 'loading') {
