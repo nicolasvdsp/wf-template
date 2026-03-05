@@ -11,6 +11,7 @@ import glossary from './features/glossary';
 import textScramble from './features/text-scramble';
 import textStagger from './features/text-stagger';
 import marquee from './features/marquee';
+import vimeoBackground from './features/videos/vimeo-background';
 
 // ============================================
 // START
@@ -33,6 +34,7 @@ function runApp() {
     ACTIVE_FEATURES.textScramble && textScramble();
     ACTIVE_FEATURES.textStagger && textStagger();
     ACTIVE_FEATURES.marquee && marquee();
+    ACTIVE_FEATURES.vimeoBackground && vimeoBackground();
   }
 
   if (document.readyState === 'loading') {

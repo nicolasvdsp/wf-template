@@ -14,6 +14,7 @@ export const INCLUDE_FEATURES = {
   textScramble: true,
   textStagger: true,
   marquee: true,
+  vimeoBackground: true,
   // Add more features as you create them:
   // cursor: false,
   // etc.
