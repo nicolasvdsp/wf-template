@@ -14,6 +14,7 @@ import marquee from './features/marquee';
 import vimeoBackground from './features/videos/vimeo-background';
 import parallax from './features/parallax';
 import microInteractions from './features/micro-interactions';
+import faq from './features/faq';
 
 // ============================================
 // START
@@ -39,6 +40,7 @@ function runApp() {
     ACTIVE_FEATURES.vimeoBackground && vimeoBackground();
     ACTIVE_FEATURES.parallax && parallax();
     ACTIVE_FEATURES.microInteractions && microInteractions();
+    ACTIVE_FEATURES.faq && faq();
   }
 
   if (document.readyState === 'loading') {
