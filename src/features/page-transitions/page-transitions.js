@@ -174,7 +174,7 @@ function initPageTransitions() {
   // PAGE TRANSITIONS
   // -----------------------------------------
 
-  function runPageOnceAnimation(next) {
+  function runLogoPreloader(next) {
     // -----------VARIABLES--------------
     const wrap = document.querySelector("[data-load-wrap]");
     if (!wrap) return;
@@ -208,6 +208,115 @@ function initPageTransitions() {
       .add("hideContent", "<")
       // .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
       .to(bg, { autoAlpha: 0, duration: 1 }, "hideContent")
+      .set(wrap, { display: "none" });
+
+    // If there are items to hide FOUC for, reset them at the start
+    if (resetTargets.length) {
+      loadTimeline.set(resetTargets, { autoAlpha: 1 }, 0);
+    }
+
+    // If there's text items, split them, and add to load timeline
+    if (textElements.length >= 2) {
+      const firstWord = new SplitText(textElements[0], { type: "lines,chars", mask: "lines" });
+      const secondWord = new SplitText(textElements[1], { type: "lines,chars", mask: "lines" });
+
+      gsap.set([firstWord.chars, secondWord.chars], { autoAlpha: 0, yPercent: 125 });
+      gsap.set(textElements, { autoAlpha: 1 });
+
+      // "( 0% )" stagger in
+      loadTimeline.to(firstWord.chars, {
+        autoAlpha: 1,
+        yPercent: 0,
+        duration: 0.6,
+        stagger: { each: 0.02 }
+      }, 0);
+
+      // revert split, count, then re-split and transition to second text
+      loadTimeline.call(() => {
+        firstWord.revert();
+        gsap.to({ val: 0 }, {
+          val: 100,
+          duration: 1,
+          snap: { val: 100 / 6 },
+          ease: "none",
+          onUpdate() {
+            textElements[0].textContent = "( " + Math.round(this.targets()[0].val) + "% )";
+          },
+          onComplete() {
+            const exitSplit = new SplitText(textElements[0], { type: "lines,chars", mask: "lines" });
+            gsap.timeline({ delay: 0.4 })
+              .to(exitSplit.chars, {
+                autoAlpha: 0,
+                yPercent: -125,
+                duration: 0.4,
+                stagger: { each: 0.02 }
+              }, 0)
+              .to(secondWord.chars, {
+                autoAlpha: 1,
+                yPercent: 0,
+                duration: 0.6,
+                stagger: { each: 0.02 }
+              }, 0);
+          }
+        });
+      }, null, ">");
+
+      // second text out
+      loadTimeline.to(secondWord.chars, {
+        autoAlpha: 0,
+        yPercent: -125,
+        duration: 0.4,
+        stagger: { each: 0.02 }
+      }, "hideContent-=0.5");
+    }
+
+    loadTimeline.call(() => dispatchPageVisible(next), null, "hideContent");
+    addSectionReveal(loadTimeline, next, "hideContent-=.05");
+    addTextReveals(loadTimeline, next, "hideContent+=0.3");
+    addElementReveals(loadTimeline, next, "hideContent+=0.6");
+
+
+    // ------------tl_end----------------
+
+    loadTimeline.call(() => {
+      resetPage(next)
+    }, null, 0);
+
+    return loadTimeline;
+  }
+  function runLogoPreloaderFast(next) {
+    // -----------VARIABLES--------------
+    const wrap = document.querySelector("[data-load-wrap]");
+
+    const container = wrap.querySelector("[data-load-container]");
+    const bg = wrap.querySelector("[data-load-bg]");
+    const progressBar = wrap.querySelector("[data-load-progress]");
+    const progressBars = Array.from(wrap.querySelectorAll("[data-load-progress]"));
+    const logo = wrap.querySelector("[data-load-logo]");
+    const textElements = Array.from(wrap.querySelectorAll("[data-load-text]"));
+
+    // Reset targets that are * not * split text targets
+    const resetTargets = Array.from(
+      wrap.querySelectorAll('[data-load-reset]:not([data-load-text])')
+    );
+    // ------------var_end---------------
+    // -----------TIMELINE---------------
+
+    // Main loader timeline
+    const loadTimeline = gsap.timeline({
+      defaults: {
+        ease: "loader",
+        duration: .5
+      }
+    })
+      .set(wrap, { display: "block" })
+      // .to(progressBars, { scaleX: 1 })
+      .to(logo, { clipPath: "inset(0% 0% 0% 0%)" }, "<")
+      .to(container, { autoAlpha: 0, duration: .5 })
+      // .to(progressBars, { scaleX: 0, transformOrigin: "right center", duration: 0.5 }, "<")
+      .add("hideContent", "<")
+      // .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
+      .to(bg, { autoAlpha: 0, duration: .5 }, "hideContent")
       .set(wrap, { display: "none" });
 
     // If there are items to hide FOUC for, reset them at the start
@@ -629,7 +738,7 @@ function initPageTransitions() {
         async once(data) {
           initOnceFunctions();
 
-          return runPageOnceAnimation(data.next.container);
+          return runLogoPreloaderFast(data.next.container);
         },
 
         // Current page leaves
@@ -651,7 +760,7 @@ function initPageTransitions() {
         async once(data) {
           initOnceFunctions();
 
-          return runPageOnceAnimation(data.next.container);
+          return runLogoPreloaderFast(data.next.container);
         },
 
         // Current page leaves
