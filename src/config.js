@@ -18,6 +18,7 @@ export const INCLUDE_FEATURES = {
   parallax: true,
   microInteractions: true,
   faq: true,
+  vimeoAdvanced: true,
   // Add more features as you create them:
   // cursor: false,
   // etc.
