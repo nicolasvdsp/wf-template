@@ -394,6 +394,49 @@ function initPageTransitions() {
     return loadTimeline;
   }
 
+  function runPageEnterSelf(next) {
+    // -----------VARIABLES--------------
+
+    // ------------var_end---------------
+
+    const tl = gsap.timeline();
+
+    if (reducedMotion) {
+      // Immediate swap behavior if user prefers reduced motion
+      tl.set(next, { autoAlpha: 1 });
+      tl.add("pageReady")
+      tl.call(resetPage, [next], "pageReady");
+      return new Promise(resolve => tl.call(resolve, null, "pageReady"));
+    }
+
+    // -----------TIMELINE---------------
+    //gsap marker: marks the start of the animation
+    tl.add("startEnter", 0);
+
+    tl.fromTo(next, {
+      autoAlpha: 0,
+    }, {
+      autoAlpha: 1,
+    }, "startEnter");
+
+    tl.call(() => dispatchPageVisible(next), null, "startEnter");
+
+    //gsap marker: marks the end of the animation
+    tl.add("pageReady");
+
+    addSectionReveal(tl, next, "pageReady-=0.6");
+    addTextReveals(tl, next, "pageReady+=0.2");
+    addElementReveals(tl, next, "pageReady+=0.2");
+    // ------------tl_end----------------
+
+    tl.call(resetPage, [next], "pageReady");
+
+    return new Promise(resolve => {
+      tl.call(resolve, null, "pageReady");
+    });
+  }
+
+
   function runPageLeaveAnimation(current, next) {
     // -----------VARIABLES--------------
 
@@ -749,6 +792,28 @@ function initPageTransitions() {
         // New page enters
         async enter(data) {
           return pageEnterParallaxOver(data.next.container);
+        }
+      },
+      { //self
+        name: "self",
+        custom: () => true,
+        sync: true,
+
+        // First load
+        async once(data) {
+          initOnceFunctions();
+
+          return runLogoPreloaderFast(data.next.container);
+        },
+
+        // Current page leaves
+        async leave(data) {
+          return runPageLeaveAnimation(data.current.container, data.next.container);
+        },
+
+        // New page enters
+        async enter(data) {
+          return runPageEnterSelf(data.next.container);
         }
       },
       { //crossfade
