@@ -16,6 +16,7 @@ import vimeoAdvanced from './features/videos/vimeo-advanced';
 import parallax from './features/parallax';
 import microInteractions from './features/micro-interactions';
 import faq from './features/faq';
+import utilities from './features/utilities';
 
 // ============================================
 // START
@@ -43,6 +44,7 @@ function runApp() {
     ACTIVE_FEATURES.parallax && parallax();
     ACTIVE_FEATURES.microInteractions && microInteractions();
     ACTIVE_FEATURES.faq && faq();
+    ACTIVE_FEATURES.utilities && utilities();
   }
 
   if (document.readyState === 'loading') {
