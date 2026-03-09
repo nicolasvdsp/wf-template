@@ -437,7 +437,7 @@ function initPageTransitions() {
   }
 
 
-  function runPageLeaveAnimation(current, next) {
+  function pageLeaveCrossFade(current, next) {
     // -----------VARIABLES--------------
 
     // ------------var_end---------------
@@ -462,7 +462,7 @@ function initPageTransitions() {
     return tl;
   }
 
-  function runPageEnterAnimation(next) {
+  function pageEnterCrossFade(next) {
     // -----------VARIABLES--------------
 
     // ------------var_end---------------
@@ -601,7 +601,7 @@ function initPageTransitions() {
 
   function leaveItemToDetailTransition(current, next, trigger) {
     const clicked = trigger.closest("[data-pagetransition-trigger]");
-    if (!clicked) return runPageLeaveAnimation(current, next);
+    if (!clicked) return pageLeaveCrossFade(current, next);
 
     // -----------VARIABLES--------------
     const thumbnail = clicked.querySelector("[data-pagetransition-target]");
@@ -633,7 +633,7 @@ function initPageTransitions() {
   }
 
   function enterDetailFromItemTransition(next) {
-    if (!flipState || !flippedThumbnail) return runPageEnterAnimation(next);
+    if (!flipState || !flippedThumbnail) return pageEnterCrossFade(next);
 
     console.log(next);
 
@@ -808,7 +808,7 @@ function initPageTransitions() {
 
         // Current page leaves
         async leave(data) {
-          return runPageLeaveAnimation(data.current.container, data.next.container);
+          return pageLeaveCrossFade(data.current.container, data.next.container);
         },
 
         // New page enters
@@ -830,12 +830,12 @@ function initPageTransitions() {
 
         // Current page leaves
         async leave(data) {
-          return runPageLeaveAnimation(data.current.container, data.next.container);
+          return pageLeaveCrossFade(data.current.container, data.next.container);
         },
 
         // New page enters
         async enter(data) {
-          return runPageEnterAnimation(data.next.container);
+          return pageEnterCrossFade(data.next.container);
         }
       }
 
