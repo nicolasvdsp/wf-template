@@ -1,5 +1,4 @@
-/**
- * Staging / Localhost Detection
+/** Staging / Localhost Detection
  *
  * On staging (.webflow.io) with dev-mode attribute: tries localhost dev server first.
  * If localhost is available, loads the dev version with HMR.
@@ -15,7 +14,6 @@ const DEV_MESSAGE = "🚧 Dev Mode activated";
 const LIVE_MESSAGE = "🛸 Hi there explorer! You have stumbeled upon the mothership. Lookinging for secretes?";
 
 export function detectAndRun(runApp) {
-  // Prevent double execution (dev server loads main.js again)
   if (window.__LOADER_EXECUTED) {
     runApp();
     return;
@@ -25,12 +23,19 @@ export function detectAndRun(runApp) {
   const isStaging = window.location.hostname.endsWith('.webflow.io');
   const hasDevMode = !!document.querySelector('script[src*="main"][dev-mode]');
 
-  if (!isStaging || !hasDevMode) {
-    runApp();
-    return;
+  if (isStaging && hasDevMode) {
+    tryLocalDevServer(runApp);
+  } else {
+    runBundled(runApp);
   }
+}
 
-  // Staging with dev-mode — try localhost dev server
+function runBundled(runApp) {
+  console.log(LIVE_MESSAGE);
+  runApp();
+}
+
+function tryLocalDevServer(runApp) {
   const localhostUrl = `http://localhost:${DEV_PORT}/src/main.js`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 300);
@@ -40,23 +45,18 @@ export function detectAndRun(runApp) {
       clearTimeout(timeoutId);
       console.log(DEV_MESSAGE);
 
-      // Load Vite client for HMR
       const viteClient = document.createElement('script');
       viteClient.type = 'module';
       viteClient.src = `http://localhost:${DEV_PORT}/@vite/client`;
       document.head.appendChild(viteClient);
 
-      // Load dev main.js (replaces this bundled version)
       const devScript = document.createElement('script');
       devScript.type = 'module';
       devScript.src = localhostUrl;
       document.body.appendChild(devScript);
-
-      // Don't run the bundled code — dev server takes over
     })
     .catch(() => {
       clearTimeout(timeoutId);
-      console.log(LIVE_MESSAGE);
-      runApp();
+      runBundled(runApp);
     });
 }
