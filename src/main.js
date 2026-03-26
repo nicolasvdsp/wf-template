@@ -1,3 +1,4 @@
+import './scss/app.scss';
 // import './scss/app.scss';
 import { INCLUDE_FEATURES } from './config';
 import { detectAndRun } from './loader';
