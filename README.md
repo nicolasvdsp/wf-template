@@ -1,6 +1,16 @@
 # Webflow Custom JavaScript Template
 
+> **Template v2** — Rebuilt from a production-ready Webflow project. The previous v1 starter is archived at the [`v1-legacy`](https://github.com/nicolasvdsp/wf-template/tree/v1-legacy) tag.
+
 A modern, scalable template for adding custom JavaScript to Webflow projects using Vite, ES modules, and optional feature loading.
+
+## Using this template
+
+1. Click **Use this template** on GitHub to create a new repository
+2. `npm install`
+3. Copy `CONTEXT.md.example` → `CONTEXT.md` and fill in your project details
+4. Configure features in `src/config.js`
+5. Follow the [Webflow Setup Guide](documentation/webflow-setup.md)
 
 ## Features
 

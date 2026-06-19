@@ -1,19 +1,20 @@
-# Uman Website — Dev Context
+# Project — Dev Context
 
-Use this file at the start of a new chat to skip project discovery and jump straight into building.
+Copy this file to `CONTEXT.md` and fill in your project-specific values.
+Use it at the start of a new chat to skip project discovery and jump straight into building.
 
 ---
 
 ## Project Overview
 
-Uman marketing website built in **Webflow**, with a custom JS/SCSS layer on top for interactions and animations. The Webflow MCP bridge and Figma MCP are used together to build components.
+[Your client] marketing website built in **Webflow**, with a custom JS/SCSS layer on top for interactions and animations. The Webflow MCP bridge and Figma MCP are used together to build components.
 
 ---
 
 ## Tools & MCPs
 
-- **Webflow MCP bridge**: Must be open with the Webflow Designer tab active and in the foreground (not idle/backgrounded). Webflow site ID: `df80d3b5-4b9e-4ec0-9676-24aaefb8e5a4`
-- **Figma MCP**: File is "Uman - Website". Use `get_design_context` + `get_screenshot` together. Dev notes for sections are placed next to frames in Figma.
+- **Webflow MCP bridge**: Must be open with the Webflow Designer tab active and in the foreground (not idle/backgrounded). Webflow site ID: `YOUR-WEBFLOW-SITE-ID`
+- **Figma MCP**: File is "[Your project] - Website". Use `get_design_context` + `get_screenshot` together. Dev notes for sections are placed next to frames in Figma.
 - **No CSS shorthand** in Webflow style calls — always use longhand (`margin-top`, `padding-left`, etc.)
 - Reuse existing Webflow variables and styles wherever logical. Only create new ones when truly necessary.
 
@@ -36,10 +37,10 @@ The Webflow `<script>` carries the protocol opt-in:
 
 ```html
 <!-- HTTP localhost (default) -->
-<script defer src="https://uman-ai.netlify.app/main.min.js" dev-mode></script>
+<script defer src="https://YOUR-PROJECT.netlify.app/main.min.js" dev-mode></script>
 
 <!-- HTTPS localhost (use when staging is HTTPS + Safari blocks mixed content) -->
-<script defer src="https://uman-ai.netlify.app/main.min.js" dev-mode https-mode></script>
+<script defer src="https://YOUR-PROJECT.netlify.app/main.min.js" dev-mode https-mode></script>
 ```
 
 Run the matching Vite command:
@@ -133,53 +134,7 @@ Custom CSS that can't be done in Webflow UI goes in the relevant `_[component].s
 ## Key CSS Patterns
 
 - **`overflow: clip`** instead of `overflow: hidden` when sticky children are involved — `clip` doesn't create a scroll container so `position: sticky` on children is preserved
-- **SVG gradient fills**: Define a hidden inline SVG with `<defs>` as a Webflow Embed element. Use `width:0; height:0; display:block` — **do not use `overflow: hidden`** (breaks `url(#id)` gradient references in some browsers). Reference via `fill: url(#gradient-id)` in SCSS. Guard with `html:not(.wf-design-mode)` to prevent applying in Webflow Designer. Gradient IDs follow the naming convention `tab-icon-gradient-{name}` (e.g. `tab-icon-gradient-blue`, `tab-icon-gradient-pink`, `tab-icon-gradient-orange`, `tab-icon-gradient-none`).
-
-Example SVG defs embed:
-```html
-<svg id="svg-defs" aria-hidden="true" style="position:absolute;width:0;height:0;display:block;">
-  <defs>
-    <linearGradient id="tab-icon-gradient-blue" x1="1" y1="0" x2="0" y2="0.34" gradientUnits="objectBoundingBox">
-      <stop offset="0%" stop-color="#0138FF"/>
-      <stop offset="90%" stop-color="#0138FF" stop-opacity="0.4"/>
-      <stop offset="100%" stop-color="#0138FF" stop-opacity="0.2"/>
-    </linearGradient>
-  </defs>
-</svg>
-```
-
-Use `data-gradient-fill="blue"` on the wrapper element, then target in SCSS:
-```scss
-html:not(.wf-design-mode) [data-gradient-fill="blue"] svg path {
-  fill: url(#tab-icon-gradient-blue);
-}
-```
-
----
-
-## Existing Features (as of this writing)
-
-| Feature | File | Notes |
-|---|---|---|
-| Page transitions | `src/features/page-transitions/` | Barba.js setup |
-| Navbar | `src/features/navbar.js` | Sticky, scroll-aware |
-| Services | `src/features/services.js` | Scroll-based sticky tab switching, GSAP ScrollTrigger |
-| Scroll behaviour | `src/features/scroll-behaviour/` | |
-| Animations | `src/features/animations/` | GSAP |
-| Text scramble | `src/features/text-scramble.js` | |
-| Text stagger | `src/features/text-stagger.js` | |
-| Marquee | `src/features/marquee.js` | |
-| Parallax | `src/features/parallax.js` | |
-| Micro interactions | `src/features/micro-interactions.js` | |
-| FAQ | `src/features/faq.js` | |
-| Glossary | `src/features/glossary.js` | |
-| Vimeo background | `src/features/videos/vimeo-background.js` | |
-| Vimeo advanced | `src/features/videos/vimeo-advanced.js` | |
-| Breakpoints | `src/features/breakpoints.js` | |
-| Utilities | `src/features/utilities.js` | |
-| Lucide icons | `src/features/lucide-icons.js` | CMS-driven icon swap with gradient stroke support |
-| Testimonials | `src/features/testimonials.js` | Auto-rotating tabs with CMS data |
-| Richtext features | `src/features/richtext-features.js` | |
+- **SVG gradient fills**: Define a hidden inline SVG with `<defs>` as a Webflow Embed element. Use `width:0; height:0; display:block` — **do not use `overflow: hidden`** (breaks `url(#id)` gradient references in some browsers). Reference via `fill: url(#gradient-id)` in SCSS. Guard with `html:not(.wf-design-mode)` to prevent applying in Webflow Designer.
 
 ---
 
